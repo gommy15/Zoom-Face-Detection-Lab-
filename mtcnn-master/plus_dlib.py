@@ -10,35 +10,35 @@ import datetime
 import pyautogui
 import pygetwindow as gw
 import pywinauto
+import time
 
 print(datetime.datetime.now())
 predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
 detector = MTCNN()
 print(datetime.datetime.now())
-
+'''
 #저장되어있는 이미지를 사용할 때
-image_name = "./image/real_test.png"
-resultImg_name = "./result/real_test_dlib.png"
+image_name = "./image/zoom2.png"
+resultImg_name = "./result/zoom2.png"
 '''
 
 #캡쳐 이미지를 사용할 때
 image_name = "./image/screenshot.jpg"
 resultImg_name = "./result/screenshot_drawn.jpg"
 
-#win = gw.getWindowsWithTitle('Zoom')[0]
+#win = gw.getWindowsWithTitle('Zoom 회의')
 win = gw.getWindowsWithTitle('사진')[0]
 win.activate()
+win.maximize()
+
 
 if win.isActive == False:
     pywinauto.application.Application().connect(handle=win._hWnd).top_window().set_focus()
     win.activate()
 
-#pyautogui.doubleClick(win.center)
-#time.sleep(6)
-pyautogui.click(win.right, win.bottom)
-
+time.sleep(1)           #maximize 되는 시간 기다리기
 pyautogui.screenshot(image_name)
-'''
+
 
 image = cv2.cvtColor(cv2.imread(image_name), cv2.COLOR_BGR2RGB)
 result = detector.detect_faces(image)
@@ -76,7 +76,7 @@ for i in range(len(result)):
     # 번호값을 하나씩 바꿔가며 좌표를 찍자.
     for i in range(shape.num_parts):  # 총 68개
         shape_point = shape.part(i)
-        print('얼굴 랜드마크 No.{} 좌표위치: ({}, {})'.format(i, shape_point.x, shape_point.y))
+        #print('얼굴 랜드마크 No.{} 좌표위치: ({}, {})'.format(i, shape_point.x, shape_point.y))
 
         # 얼굴 랜드마크마다 그리기
         ## i(랜드마크 번호)가 17보다 작으면 out(바깥쪽)을 그린다 - 파란색 점
@@ -101,8 +101,8 @@ for i in range(len(result)):
     # math.asin(x) : x의 아크 사인을 라디안 값으로 반환
     theta = math.asin(2 * (gx_in - gx_out) / (dlib_rect.right() - dlib_rect.left()))
     radian = theta * 180 / math.pi
-    print(' ')
-    print('얼굴방향: {0:.3f} (각도: {1:.3f}도)'.format(theta, radian))
+    #print(' ')
+    #print('얼굴방향: {0:.3f} (각도: {1:.3f}도)'.format(theta, radian))
 
     # 이 얼굴방향과 각도를 face('d') 사각형 위에 출력
     if radian < 0:

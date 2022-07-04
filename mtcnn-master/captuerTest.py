@@ -3,7 +3,7 @@ import pygetwindow as gw
 import pywinauto
 import time
 
-win = gw.getWindowsWithTitle('Zoom')[0]
+win = gw.getWindowsWithTitle('real_test')[0]
 
 win.activate() # 해당 윈도우를 활성화
 #print(win.size)
@@ -17,8 +17,4 @@ left_top_x = win.topleft[0]
 right_bottom_y = win.bottomright[1]
 
 pyautogui.screenshot('test.png', region=(win.left, win.top, win.right, win.bottom))
-#pyautogui.doubleClick(win.center) # 해당 윈도우창의 정가운데 더블 클릭
-
-#time.sleep(6)
-
-#pyautogui.screenshot('test.png')
+print(win.left, win.top, win.right, win.bottom)

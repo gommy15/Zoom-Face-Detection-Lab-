@@ -18,8 +18,8 @@ detector = MTCNN()
 print(datetime.datetime.now())
 '''
 #저장되어있는 이미지를 사용할 때
-image_name = "./image/zoom2.png"
-resultImg_name = "./result/zoom2.png"
+image_name = "./image/real_test.png"
+resultImg_name = "./result/real_test_drawn.png"
 '''
 
 #캡쳐 이미지를 사용할 때
@@ -31,13 +31,12 @@ win = gw.getWindowsWithTitle('사진')[0]
 win.activate()
 win.maximize()
 
-
 if win.isActive == False:
     pywinauto.application.Application().connect(handle=win._hWnd).top_window().set_focus()
     win.activate()
 
 time.sleep(1)           #maximize 되는 시간 기다리기
-pyautogui.screenshot(image_name)
+pyautogui.screenshot(image_name, region=(win.left, win.top, win.right, win.bottom))
 
 
 image = cv2.cvtColor(cv2.imread(image_name), cv2.COLOR_BGR2RGB)

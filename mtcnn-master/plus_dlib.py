@@ -12,13 +12,13 @@ import pygetwindow as gw
 import pywinauto
 
 print(datetime.datetime.now())
-predictor = dlib.shape_predictor("shape_predictor_5_face_landmarks.dat")
+predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
 detector = MTCNN()
 print(datetime.datetime.now())
 
 #저장되어있는 이미지를 사용할 때
 image_name = "./image/real_test.png"
-resultImg_name = "./result/real_test_dlib5.png"
+resultImg_name = "./result/real_test_dlib.png"
 '''
 
 #캡쳐 이미지를 사용할 때
@@ -65,7 +65,7 @@ for i in range(len(result)):
     font_width = 2
 
     # 이제 랜드마크에 점을 찍어보자.
-    num_of_points_out = 4
+    num_of_points_out = 17
     num_of_points_in = shape.num_parts - num_of_points_out
     gx_out = 0
     gy_out = 0
@@ -76,16 +76,16 @@ for i in range(len(result)):
     # 번호값을 하나씩 바꿔가며 좌표를 찍자.
     for i in range(shape.num_parts):  # 총 68개
         shape_point = shape.part(i)
-        #print('얼굴 랜드마크 No.{} 좌표위치: ({}, {})'.format(i, shape_point.x, shape_point.y))
+        print('얼굴 랜드마크 No.{} 좌표위치: ({}, {})'.format(i, shape_point.x, shape_point.y))
 
         # 얼굴 랜드마크마다 그리기
-        ## i(랜드마크 번호)가 4보다 작으면 out(바깥쪽)을 그린다 - 파란색 점
+        ## i(랜드마크 번호)가 17보다 작으면 out(바깥쪽)을 그린다 - 파란색 점
         if i < num_of_points_out:
             cv2.circle(image, (shape_point.x, shape_point.y), circle_r, (0, 0, 255), line_width)
             gx_out = gx_out + shape_point.x / num_of_points_out
             gy_out = gy_out + shape_point.y / num_of_points_out
 
-        ##반면 i가 4이상이면 in(안쪽)을 그린다 - 초록색 점
+        ##반면 i가 17이상이면 in(안쪽)을 그린다 - 초록색 점
         else:
             cv2.circle(image, (shape_point.x, shape_point.y), circle_r, (0, 255, 0), line_width)
             gx_in = gx_in + shape_point.x / num_of_points_in
@@ -102,7 +102,7 @@ for i in range(len(result)):
     theta = math.asin(2 * (gx_in - gx_out) / (dlib_rect.right() - dlib_rect.left()))
     radian = theta * 180 / math.pi
     print(' ')
-    #print('얼굴방향: {0:.3f} (각도: {1:.3f}도)'.format(theta, radian))
+    print('얼굴방향: {0:.3f} (각도: {1:.3f}도)'.format(theta, radian))
 
     # 이 얼굴방향과 각도를 face('d') 사각형 위에 출력
     if radian < 0:

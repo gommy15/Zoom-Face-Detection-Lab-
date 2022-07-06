@@ -12,13 +12,13 @@ import pygetwindow as gw
 import pywinauto
 
 print(datetime.datetime.now())
-predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
+predictor = dlib.shape_predictor("shape_predictor_5_face_landmarks.dat")
 detector = MTCNN()
 print(datetime.datetime.now())
 
 #저장되어있는 이미지를 사용할 때
 image_name = "./image/real_test.png"
-resultImg_name = "./result/real_test_dlib.png"
+resultImg_name = "./result/real_test_dlib5.png"
 '''
 
 #캡쳐 이미지를 사용할 때
@@ -65,7 +65,7 @@ for i in range(len(result)):
     font_width = 2
 
     # 이제 랜드마크에 점을 찍어보자.
-    num_of_points_out = 17
+    num_of_points_out = 4
     num_of_points_in = shape.num_parts - num_of_points_out
     gx_out = 0
     gy_out = 0

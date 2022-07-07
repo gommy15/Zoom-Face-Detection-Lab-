@@ -14,6 +14,7 @@ print("width : ",width, "height : ", height)
 user_box = user
 #각 사용자의 박스 좌표 구하기
 for i in range(len(user)):
-    user_box[i]['box_coordinate'] = (int(user[i]['coordinate'][0]), int(user[i]['coordinate'][1]), int(width), int(height))
+    #user_box[i]['box_coordinate'] = (int(user[i]['coordinate'][0]), int(user[i]['coordinate'][1]), int(width), int(height))
+    user_box[i]['box_coordinate'] = (int(user[i]['coordinate'][0]), int(user[i]['coordinate'][1]) - int(height), int(user[i]['coordinate'][0]) + int(width), int(user[i]['coordinate'][1]))  # 시작점 x,y / 종료점 x,y
 
 print(user_box)

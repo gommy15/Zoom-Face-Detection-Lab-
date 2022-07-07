@@ -45,6 +45,8 @@ img.save(image_name)
 image = cv2.cvtColor(cv2.imread(image_name), cv2.COLOR_BGR2RGB)
 result = detector.detect_faces(image)
 
+face_coordinate = []
+
 # 모든 얼굴을 탐지하기 위해 for문 사용
 for i in range(len(result)):
     bounding_box = result[i]['box']
@@ -65,6 +67,12 @@ for i in range(len(result)):
     fontType = cv2.FONT_HERSHEY_SIMPLEX
     fontSize = 0.6
     font_width = 2
+
+    # 좌표
+    center_x = bounding_box[0] + (bounding_box[2] / 2)
+    center_y = bounding_box[1] + (bounding_box[3] / 2)
+
+    face_coordinate.append((int(center_x), int(center_y)))
 
     # 이제 랜드마크에 점을 찍어보자.
     num_of_points_out = 17

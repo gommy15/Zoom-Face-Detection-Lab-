@@ -14,7 +14,7 @@ client_options = {'api_endpoint': 'eu-vision.googleapis.com'}
 client = vision.ImageAnnotatorClient(client_options=client_options)
 
 
-path = './image/test_image.png'
+path = "./image3.png"
 with io.open(path, 'rb') as image_file:
     content = image_file.read()
 
@@ -117,5 +117,5 @@ if response.error.message:
             response.error.message))
 
 #plt_imshow(["Original", "ROI"], [img, roi_img], figsize=(16, 10)) #기존, 박스 이미지 둘다 띄움
-plt.imshow(roi_img)
-plt.show()
+#plt.imshow(roi_img)
+#plt.show()

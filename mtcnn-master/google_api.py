@@ -14,7 +14,7 @@ client_options = {'api_endpoint': 'eu-vision.googleapis.com'}
 client = vision.ImageAnnotatorClient(client_options=client_options)
 
 
-path = "./image3.png"
+path = "./image/real_test3.png"
 with io.open(path, 'rb') as image_file:
     content = image_file.read()
 

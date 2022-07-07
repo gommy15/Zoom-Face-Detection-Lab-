@@ -84,7 +84,7 @@ for i in range(len(result)):
 
     # 점을 찍으려면 필요한 건 좌표!  -> 이는 shape.part(번호) 에 (x,y로) 들어있다.
     # 번호값을 하나씩 바꿔가며 좌표를 찍자.
-    for i in range(shape.num_parts):  # 총 17개
+    for i in range(shape.num_parts):  # 총 68개
         shape_point = shape.part(i)
         #print('얼굴 랜드마크 No.{} 좌표위치: ({}, {})'.format(i, shape_point.x, shape_point.y))
 

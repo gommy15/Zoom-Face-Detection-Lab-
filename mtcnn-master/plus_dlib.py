@@ -3,7 +3,8 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 import cv2
 from mtcnn import MTCNN
-from PIL import Image
+from PIL import ImageGrab
+from functools import partial
 import dlib
 import math
 import datetime
@@ -13,13 +14,14 @@ import pywinauto
 import time
 
 print(datetime.datetime.now())
-predictor = dlib.shape_predictor("shape_predictor_5_face_landmarks.dat")
+predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
 detector = MTCNN()
 print(datetime.datetime.now())
-'''
+
 #저장되어있는 이미지를 사용할 때
-image_name = "./image/real_test.png"
-resultImg_name = "./result/real_test_drawn.png"
+image_name = "./image3.png"
+    #"./image/real_test.png"
+resultImg_name = "./result/image3_test.png"
 '''
 
 #캡쳐 이미지를 사용할 때
@@ -27,18 +29,19 @@ image_name = "./image/screenshot.jpg"
 resultImg_name = "./result/screenshot_drawn.jpg"
 
 #win = gw.getWindowsWithTitle('Zoom 회의')
-win = gw.getWindowsWithTitle('사진')[0]
+win = gw.getWindowsWithTitle('image3.png')[0]
 win.activate()
-win.maximize()
+#win.maximize()
 
 if win.isActive == False:
     pywinauto.application.Application().connect(handle=win._hWnd).top_window().set_focus()
     win.activate()
 
-time.sleep(1)           #maximize 되는 시간 기다리기
-pyautogui.screenshot(image_name, region=(win.left, win.top, win.right, win.bottom))
-
-
+#time.sleep(1)           #maximize 되는 시간 기다리기
+ImageGrab.grab = partial(ImageGrab.grab, bbox=(win.left, win.top+80, win.right, win.bottom-80), all_screens=True)
+img = ImageGrab.grab()
+img.save(image_name)
+'''
 image = cv2.cvtColor(cv2.imread(image_name), cv2.COLOR_BGR2RGB)
 result = detector.detect_faces(image)
 
@@ -64,7 +67,7 @@ for i in range(len(result)):
     font_width = 2
 
     # 이제 랜드마크에 점을 찍어보자.
-    num_of_points_out = 4
+    num_of_points_out = 17
     num_of_points_in = shape.num_parts - num_of_points_out
     gx_out = 0
     gy_out = 0
@@ -73,7 +76,7 @@ for i in range(len(result)):
 
     # 점을 찍으려면 필요한 건 좌표!  -> 이는 shape.part(번호) 에 (x,y로) 들어있다.
     # 번호값을 하나씩 바꿔가며 좌표를 찍자.
-    for i in range(shape.num_parts):  # 총 5개
+    for i in range(shape.num_parts):  # 총 17개
         shape_point = shape.part(i)
         #print('얼굴 랜드마크 No.{} 좌표위치: ({}, {})'.format(i, shape_point.x, shape_point.y))
 

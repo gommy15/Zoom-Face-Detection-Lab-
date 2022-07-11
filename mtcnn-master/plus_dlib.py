@@ -1,4 +1,5 @@
 import os
+import sys
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 import cv2
@@ -12,6 +13,7 @@ import pyautogui
 import pygetwindow as gw
 import pywinauto
 import time
+from image_path import *
 
 print(datetime.datetime.now())
 predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
@@ -19,23 +21,25 @@ detector = MTCNN()
 print(datetime.datetime.now())
 
 #저장되어있는 이미지를 사용할 때
-image_name = "./image3.png"
+#image_name = "./image/real_test3.png"
     #"./image/real_test.png"
-resultImg_name = "./result/image3_test.png"
+#resultImg_name = "./result/real_test3_dlib.png"
+
 '''
-
 #캡쳐 이미지를 사용할 때
-image_name = "./image/screenshot.jpg"
-resultImg_name = "./result/screenshot_drawn.jpg"
-
-#win = gw.getWindowsWithTitle('Zoom 회의')
-win = gw.getWindowsWithTitle('image3.png')[0]
-win.activate()
-#win.maximize()
-
-if win.isActive == False:
-    pywinauto.application.Application().connect(handle=win._hWnd).top_window().set_focus()
+#image_name = "./image/screenshot.jpg"
+#resultImg_name = "./result/screenshot_drawn.jpg"
+try:
+    win = gw.getWindowsWithTitle('Zoom 회의')
+    #win = gw.getWindowsWithTitle('image3.png')[0]
     win.activate()
+    #win.maximize()
+
+    if win.isActive == False:
+        pywinauto.application.Application().connect(handle=win._hWnd).top_window().set_focus()
+        win.activate()
+except:
+    sys.exit("Zoom 회의가 끝났습니다.")
 
 #time.sleep(1)           #maximize 되는 시간 기다리기
 ImageGrab.grab = partial(ImageGrab.grab, bbox=(win.left, win.top+80, win.right, win.bottom-80), all_screens=True)
@@ -45,11 +49,15 @@ img.save(image_name)
 image = cv2.cvtColor(cv2.imread(image_name), cv2.COLOR_BGR2RGB)
 result = detector.detect_faces(image)
 
-face_coordinate = []
+box_result = []
+radianText_list =[]
+radianValue_list =[]
+#face_coordinate = []
 
 # 모든 얼굴을 탐지하기 위해 for문 사용
 for i in range(len(result)):
     bounding_box = result[i]['box']
+    box_result.append(bounding_box)
     #keypoints = result[i]['keypoints']
     #confidence = result[i]['confidence']
 
@@ -58,21 +66,21 @@ for i in range(len(result)):
     shape = predictor(image, dlib_rect)
 
     #얼굴에 사각형 그리기
-    cv2.rectangle(image, (dlib_rect.left(), dlib_rect.top()), (dlib_rect.right(), dlib_rect.bottom()), (0,155,255), 2)
+    #cv2.rectangle(image, (dlib_rect.left(), dlib_rect.top()), (dlib_rect.right(), dlib_rect.bottom()), (0,155,255), 2)
 
     ## 표시할 선, 도형
-    line_width = 3
-    circle_r = 3
+    #line_width = 3
+    #circle_r = 3
     ## 글씨
-    fontType = cv2.FONT_HERSHEY_SIMPLEX
-    fontSize = 0.6
-    font_width = 2
+    #fontType = cv2.FONT_HERSHEY_SIMPLEX
+    #fontSize = 0.6
+    #font_width = 2
 
     # 좌표
-    center_x = bounding_box[0] + (bounding_box[2] / 2)
-    center_y = bounding_box[1] + (bounding_box[3] / 2)
+    #center_x = bounding_box[0] + (bounding_box[2] / 2)
+    #center_y = bounding_box[1] + (bounding_box[3] / 2)
 
-    face_coordinate.append((int(center_x), int(center_y)))
+    #face_coordinate.append((int(center_x), int(center_y)))
 
     # 이제 랜드마크에 점을 찍어보자.
     num_of_points_out = 17
@@ -91,21 +99,21 @@ for i in range(len(result)):
         # 얼굴 랜드마크마다 그리기
         ## i(랜드마크 번호)가 17보다 작으면 out(바깥쪽)을 그린다 - 파란색 점
         if i < num_of_points_out:
-            cv2.circle(image, (shape_point.x, shape_point.y), circle_r, (0, 0, 255), line_width)
+            #cv2.circle(image, (shape_point.x, shape_point.y), circle_r, (0, 0, 255), line_width)
             gx_out = gx_out + shape_point.x / num_of_points_out
             gy_out = gy_out + shape_point.y / num_of_points_out
 
         ##반면 i가 17이상이면 in(안쪽)을 그린다 - 초록색 점
         else:
-            cv2.circle(image, (shape_point.x, shape_point.y), circle_r, (0, 255, 0), line_width)
+            #cv2.circle(image, (shape_point.x, shape_point.y), circle_r, (0, 255, 0), line_width)
             gx_in = gx_in + shape_point.x / num_of_points_in
             gy_in = gy_in + shape_point.y / num_of_points_in
 
     # 랜드마크에 톡톡톡 찍힌 점들 중에서도, 가장 중심위치를 표시해보자.
     # 먼저 out(바깥쪽)은 빨강색
-    cv2.circle(image, (int(gx_out), int(gy_out)), circle_r, (255, 0, 0), line_width)
+    #cv2.circle(image, (int(gx_out), int(gy_out)), circle_r, (255, 0, 0), line_width)
     # 그리고 in(안쪽)은 검은색
-    cv2.circle(image, (int(gx_in), int(gy_in)), circle_r, (0, 0, 0), line_width)
+    #cv2.circle(image, (int(gx_in), int(gy_in)), circle_r, (0, 0, 0), line_width)
 
     # 얼굴 방향 표시하기(정면인지? 측면인지? -> 앞서 만든 out, in 좌표로 계산!)
     # math.asin(x) : x의 아크 사인을 라디안 값으로 반환
@@ -121,10 +129,12 @@ for i in range(len(result)):
         textPrefix = 'right'
 
     textShow = textPrefix + str(round(abs(radian), 1))
-    cv2.putText(image, textShow, (dlib_rect.left(), dlib_rect.top() - 10), fontType, fontSize, (255, 0, 0), font_width, cv2.LINE_AA)
+    radianText_list.append(textShow)
+    radianValue_list.append(round(radian, 2))
+    #cv2.putText(image, textShow, (dlib_rect.left(), dlib_rect.top() - 10), fontType, fontSize, (255, 0, 0), font_width, cv2.LINE_AA)
     
 #cv2.imshow('img', image)
-cv2.imwrite(resultImg_name, cv2.cvtColor(image, cv2.COLOR_RGB2BGR))
+#cv2.imwrite(resultImg_name, cv2.cvtColor(image, cv2.COLOR_RGB2BGR))
 #cv2.waitKey(0)  # 아무키나 누르면
 #cv2.destroyAllWindows() # 모든 창 닫기
 

@@ -4,6 +4,7 @@ import numpy as np
 import platform
 from PIL import ImageFont, ImageDraw, Image
 import matplotlib.pyplot as plt
+from image_path import image_name
 
 import cv2
 from google.cloud import vision
@@ -14,7 +15,7 @@ client_options = {'api_endpoint': 'eu-vision.googleapis.com'}
 client = vision.ImageAnnotatorClient(client_options=client_options)
 
 
-path = "./image/real_test3.png"
+path = image_name
 with io.open(path, 'rb') as image_file:
     content = image_file.read()
 

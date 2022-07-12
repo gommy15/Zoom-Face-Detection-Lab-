@@ -1,66 +1,74 @@
-import os.path
-
 import cv2
 import datetime
+import time
 import pandas as pd
-from plus_dlib import box_result, image, radianText_list, radianValue_list
-#from calc_coordinate import user_box
+from plus_dlib import find_face
+from calc_coordinate import calc_user
 
 d = datetime.datetime.now()
-user_box = [{'description': '20200998', 'coordinate': (184, 1090, 262, 1112), 'box_coordinate': (184, 757, 741, 1090)}, {'description': '20200996', 'coordinate': (768, 424, 846, 445), 'box_coordinate': (768, 91, 1325, 424)}, {'description': '20181112', 'coordinate': (769, 758, 846, 779), 'box_coordinate': (769, 425, 1326, 758)}, {'description': '20178888', 'coordinate': (796, 1090, 874, 1111), 'box_coordinate': (796, 757, 1353, 1090)}, {'description': '20200756', 'coordinate': (211, 424, 288, 446), 'box_coordinate': (211, 91, 768, 424)}, {'description': '20200654', 'coordinate': (1088, 1422, 1167, 1444), 'box_coordinate': (1088, 1089, 1645, 1422)}, {'description': '20190777', 'coordinate': (1381, 424, 1459, 446), 'box_coordinate': (1381, 91, 1938, 424)}, {'description': '20210101', 'coordinate': (1354, 757, 1429, 777), 'box_coordinate': (1354, 424, 1911, 757)}, {'description': '20200745', 'coordinate': (1354, 1090, 1430, 1112), 'box_coordinate': (1354, 757, 1911, 1090)}, {'description': '20200992', 'coordinate': (1938, 423, 2016, 445), 'box_coordinate': (1938, 90, 2495, 423)}, {'description': '20200759', 'coordinate': (1966, 756, 2044, 779), 'box_coordinate': (1966, 423, 2523, 756)}, {'description': '20190201', 'coordinate': (210, 757, 287, 778), 'box_coordinate': (210, 424, 767, 757)}, {'description': '20213523', 'coordinate': (1966, 1089, 2043, 1111), 'box_coordinate': (1966, 756, 2523, 1089)}]
+#user_box = [{'description': '20178888', 'coordinate': (63, 289, 96, 298), 'box_coordinate': (63, 121, 345, 289)}, {'description': '20200756', 'coordinate': (63, 457, 96, 465), 'box_coordinate': (63, 289, 345, 457)}, {'description': '20200998', 'coordinate': (51, 623, 85, 632), 'box_coordinate': (51, 455, 333, 623)}, {'description': '20181112', 'coordinate': (345, 290, 380, 298), 'box_coordinate': (345, 122, 627, 290)}, {'description': '20200759', 'coordinate': (357, 455, 391, 466), 'box_coordinate': (357, 287, 639, 455)}, {'description': '20210101', 'coordinate': (346, 623, 378, 634), 'box_coordinate': (346, 455, 628, 623)}, {'description': '20190201', 'coordinate': (651, 289, 684, 299), 'box_coordinate': (651, 121, 933, 289)}, {'description': '20200992', 'coordinate': (639, 457, 673, 465), 'box_coordinate': (639, 289, 921, 457)}, {'description': '20213523', 'coordinate': (639, 624, 672, 633), 'box_coordinate': (639, 456, 921, 624)}, {'description': '20190777', 'coordinate': (945, 289, 978, 298), 'box_coordinate': (945, 121, 1227, 289)}, {'description': '20200996', 'coordinate': (933, 457, 967, 465), 'box_coordinate': (933, 289, 1215, 457)}, {'description': '20200745', 'coordinate': (932, 622, 965, 632), 'box_coordinate': (932, 454, 1214, 622)}]
 user_total_check = []
 face_coordinate = []
-save_total_csv = []
+check_total_radian = []
+number = 1
 
-time = f'{d.hour}:{d.minute}'
+while(1):
+    box_result, image, radianText_list, radianValue_list = find_face()
+    user_box = calc_user()
 
-if os.path.isfile(f'./{d.year}-{d.month}-{d.day}.csv'):
-    radian_df = pd.read_csv(f'./{d.year}-{d.month}-{d.day}.csv', index_col='sNum')
+    for i in range(len(box_result)):
+        center_x = box_result[i][0] + (box_result[i][2] / 2)
+        center_y = box_result[i][1] + (box_result[i][3] / 2)
 
-for i in range(len(box_result)):
-    center_x = box_result[i][0] + (box_result[i][2] / 2)
-    center_y = box_result[i][1] + (box_result[i][3] / 2)
+        face_coordinate.append((int(center_x), int(center_y)))
 
-    face_coordinate.append((int(center_x), int(center_y)))
-
-    # 얼굴에 사각형 그리기
-    cv2.rectangle(image, (box_result[i][0], box_result[i][1]), (box_result[i][0]+box_result[i][2], box_result[i][1] + box_result[i][3]), (0, 155, 255), 2)
-    cv2.putText(image, radianText_list[i], (box_result[i][0], box_result[i][1] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 0, 0), 2, cv2.LINE_AA)
-
-
-for i in range(len(user_box)):
-    user_check = {'user' : i, "stay" : False, 'sNum' : user_box[i]['description']}
-    save_csv = {'sNum' : user_box[i]['description']}
-    for j in range(len(face_coordinate)):
-        if (user_box[i]['box_coordinate'][0] <= face_coordinate[j][0] & face_coordinate[j][0] <= user_box[i]['box_coordinate'][2]) \
-            & (user_box[i]['box_coordinate'][1] <= face_coordinate[j][1] & face_coordinate[j][1]<= user_box[i]['box_coordinate'][3]):
-            user_check = {'user' : i, "stay" : True, 'sNum' : user_box[i]['description'], 'radian' : radianText_list[j]}
-            if os.path.isfile(f'./{d.year}-{d.month}-{d.day}.csv') == False:
-                save_csv = {'sNum': user_box[i]['description'], time : radianValue_list[j]}
-            else :
-                #save_csv = {f'{d.hour}:{d.minute}': radianValue_list[j]}
-                save_csv = radianValue_list[j]
-                #add_df = pd.DataFrame({time : radianValue_list[j]}, index=[f"{user_box[i]['description']}"])
-                #radian_df = pd.concat([radian_df, add_df], axis=1)
-
-            break
-
-    user_total_check.append(user_check)
-    save_total_csv.append(save_csv)
+        # 얼굴에 사각형 그리기
+        cv2.rectangle(image, (box_result[i][0], box_result[i][1]), (box_result[i][0]+box_result[i][2], box_result[i][1] + box_result[i][3]), (0, 155, 255), 2)
+        cv2.putText(image, radianText_list[i], (box_result[i][0], box_result[i][1] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 0, 0), 2, cv2.LINE_AA)
 
 
-if os.path.isfile(f'./{d.year}-{d.month}-{d.day}.csv') == False:
-    radian_df = pd.DataFrame(save_total_csv)
-    #radian_df = radian_df.sort_values('sNum')
-    print(radian_df)
+    for i in range(len(user_box)):
+        user_check = {'user' : i, "stay" : False, 'sNum' : user_box[i]['description']}
+        check_radian = {'sNum' : user_box[i]['description']}
+        for j in range(len(radianValue_list)):
+            if (user_box[i]['box_coordinate'][0] <= face_coordinate[j][0] & face_coordinate[j][0] <= user_box[i]['box_coordinate'][2]) \
+                & (user_box[i]['box_coordinate'][1] <= face_coordinate[j][1] & face_coordinate[j][1]<= user_box[i]['box_coordinate'][3]):
+                user_check = {'user' : i, "stay" : True, 'sNum' : user_box[i]['description'], 'radian' : radianText_list[j]}
+                if len(check_total_radian) < i+1:
+                    check_radian = {'sNum': user_box[i]['description'], 'radian' : [radianValue_list[j]]}
+                    #print(check_radian)
+                else :
+                    for z in range(len(check_total_radian)):
+                        if check_total_radian[z]['sNum'] == user_box[i]['description']:
+                            try:
+                                check_total_radian[z]['radian'].append(radianValue_list[j])
+                                #print(check_total_radian[z])
+                            except:
+                                check_total_radian[z]['radian'] = [radianValue_list[j]]
 
-if os.path.isfile(f'./{d.year}-{d.month}-{d.day}.csv') == False:
-    radian_df.to_csv(f'./{d.year}-{d.month}-{d.day}.csv', index = None)
-else:
-    radian_df.to_csv(f'./{d.year}-{d.month}-{d.day}.csv')
-print(radian_df)
+                break
 
-cv2.imwrite('./result.png', cv2.cvtColor(image, cv2.COLOR_RGB2BGR))
+        user_total_check.append(user_check)
+        if len(check_total_radian) < i+1:
+            check_total_radian.append(check_radian)
+
+    print()
+    print('========================================')
+    print(f'{number}:', check_total_radian)
+    print(len(check_total_radian))
+    print('========================================')
+    cv2.imwrite(f'./result{number}.png', cv2.cvtColor(image, cv2.COLOR_RGB2BGR))
+    number = number+1
+
+    time.sleep(30)
+    if len(check_total_radian[0]['sNum']) == 3:
+        break
+
+
+
+#cv2.imwrite('./result.png', cv2.cvtColor(image, cv2.COLOR_RGB2BGR))
 print(datetime.datetime.now())
-print(user_total_check)
+#print(user_total_check)
+#print(check_total_radian)
+#print(len(check_total_radian), len(user_total_check))
 

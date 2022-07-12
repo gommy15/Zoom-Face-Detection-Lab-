@@ -42,8 +42,8 @@ def find_face():
             win.activate()
         '''
     except:
-        sys.exit("Zoom 회의가 끝났습니다.")
-        die()
+        print("Zoom 회의가 끝났습니다.")
+        return 0
 
     #time.sleep(1)           #maximize 되는 시간 기다리기
     ImageGrab.grab = partial(ImageGrab.grab, bbox=(win.left, win.top+80, win.right, win.bottom-80), all_screens=True)
@@ -53,15 +53,17 @@ def find_face():
     image = cv2.cvtColor(cv2.imread(image_name), cv2.COLOR_BGR2RGB)
     result = detector.detect_faces(image)
 
+    total_result = []
+    '''
     box_result = []
     radianText_list =[]
     radianValue_list =[]
     #face_coordinate = []
-
+    '''
     # 모든 얼굴을 탐지하기 위해 for문 사용
     for i in range(len(result)):
         bounding_box = result[i]['box']
-        box_result.append(bounding_box)
+        #box_result.append(bounding_box)
         #keypoints = result[i]['keypoints']
         #confidence = result[i]['confidence']
 
@@ -134,18 +136,19 @@ def find_face():
             textPrefix = 'right'
 
         textShow = textPrefix + str(round(abs(radian), 1))
-        radianText_list.append(textShow)
-        radianValue_list.append(round(radian, 2))
+        #radianText_list.append(textShow)
+        #radianValue_list.append(round(radian, 2))
         #cv2.putText(image, textShow, (dlib_rect.left(), dlib_rect.top() - 10), fontType, fontSize, (255, 0, 0), font_width, cv2.LINE_AA)
 
+        change_result = {'box': bounding_box, 'radianText': textShow, "radianValue": round(radian, 2)}
+        total_result.append(change_result)
     #cv2.imshow('img', image)
     #cv2.imwrite(resultImg_name, cv2.cvtColor(image, cv2.COLOR_RGB2BGR))
     #cv2.waitKey(0)  # 아무키나 누르면
     #cv2.destroyAllWindows() # 모든 창 닫기
 
     print(datetime.datetime.now())
-
-    return box_result, image, radianText_list, radianValue_list
+    return total_result, image
 
 if __name__=="__main__":
     find_face()

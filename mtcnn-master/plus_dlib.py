@@ -33,7 +33,7 @@ print(datetime.datetime.now())
 def find_face():
     try:
         #win = gw.getWindowsWithTitle('Zoom 회의')
-        win = gw.getWindowsWithTitle('영화')[0]
+        win = gw.getWindowsWithTitle('사진')[0]
         #win.activate()
         #win.maximize()
         '''

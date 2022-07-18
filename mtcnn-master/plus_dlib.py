@@ -32,8 +32,8 @@ print(datetime.datetime.now())
 
 def find_face():
     try:
-        #win = gw.getWindowsWithTitle('Zoom 회의')
-        win = gw.getWindowsWithTitle('사진')[0]
+        win = gw.getWindowsWithTitle('Zoom 회의')[0]
+        #win = gw.getWindowsWithTitle('영화')[0]
         #win.activate()
         #win.maximize()
         '''
@@ -46,7 +46,7 @@ def find_face():
         return 0
 
     #time.sleep(1)           #maximize 되는 시간 기다리기
-    ImageGrab.grab = partial(ImageGrab.grab, bbox=(win.left, win.top+80, win.right, win.bottom-80), all_screens=True)
+    ImageGrab.grab = partial(ImageGrab.grab, bbox=(win.left, win.top+80, win.right, win.bottom-40), all_screens=True)
     img = ImageGrab.grab()
     img.save(image_name)
 
@@ -140,7 +140,7 @@ def find_face():
         #radianValue_list.append(round(radian, 2))
         #cv2.putText(image, textShow, (dlib_rect.left(), dlib_rect.top() - 10), fontType, fontSize, (255, 0, 0), font_width, cv2.LINE_AA)
 
-        change_result = {'box': bounding_box, 'radianText': textShow, "radianValue": round(radian, 2)}
+        change_result = {'box': bounding_box, 'radianText': textShow, "radianValue": round(radian, 2), "face_size" : bounding_box[2]*bounding_box[3]}
         total_result.append(change_result)
     #cv2.imshow('img', image)
     #cv2.imwrite(resultImg_name, cv2.cvtColor(image, cv2.COLOR_RGB2BGR))

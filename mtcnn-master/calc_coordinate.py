@@ -7,8 +7,9 @@ def calc_user():
     #사용자간 사이 높이, 너비 구하기
     for j in range(len(user)):
         if abs(user[0]['coordinate'][0]- user[j]['coordinate'][0]) >= 100:
-            width = user[j]['coordinate'][0] - user[0]['coordinate'][0]
-            break
+            if user[j]['coordinate'][0] == user[j + 1]['coordinate'][0]:
+                width = user[j]['coordinate'][0] - user[0]['coordinate'][0]
+                break
 
     height = user[1]['coordinate'][1] - user[0]['coordinate'][1]
 
